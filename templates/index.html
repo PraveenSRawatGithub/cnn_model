@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat or Dog Classifier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Apply a cleaner font style */
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+
+        /* Center the content with a better container size */
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            max-width: 420px;
+            width: 100%;
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* Increase the size of the heading and add margin */
+        h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* Style the file input label as a button */
+        .custom-file-upload {
+            display: inline-block;
+            padding: 12px 25px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+        }
+
+        /* Hide the default file input button */
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Styling the Upload button to appear nicely */
+        input[type="submit"] {
+            padding: 12px 25px;
+            font-size: 1rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #218838;
+            transform: translateY(-3px);
+        }
+
+        /* Style for the image preview */
+        #imagePreview {
+            margin-top: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 100%;
+            max-height: 300px;
+        }
+
+        /* Adjust layout for mobile view */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .custom-file-upload,
+            input[type="submit"] {
+                font-size: 0.9rem;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+    <script>
+        // Function to preview the image before upload and show the Upload button
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const uploadButton = document.getElementById('uploadButton');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imgElement = document.getElementById('imagePreview');
+                    imgElement.src = e.target.result;
+                    imgElement.style.display = 'block';  // Show the image
+                }
+                reader.readAsDataURL(file);  // Convert the file to base64 data URL
+
+                // Show the Upload button when an image is selected
+                uploadButton.removeAttribute('hidden');
+            } else {
+                // Hide the Upload button if no file is selected
+                uploadButton.setAttribute('hidden', 'true');
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Cat or Dog Classifier</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <!-- Custom file input with a styled button -->
+            <label for="file-upload" class="custom-file-upload">
+                Choose File
+            </label>
+            <input type="file" id="file-upload" name="file" onchange="previewImage(event)">
+            <br><br>
+
+            <!-- Image preview element -->
+            <img id="imagePreview"
+                src="{% if image_url %}{{ url_for('static', filename='uploads/' ~ image_url) }}{% else %}#{% endif %}"
+                alt="Image Preview" style="display: {% if image_url %}block{% else %}none{% endif %};" />
+            <br><br>
+
+            <!-- Submit button, initially hidden -->
+            <input type="submit" id="uploadButton" value="Upload" hidden>
+        </form>
+
+        <!-- Prediction result after the image is uploaded -->
+        {% if prediction %}
+        <p><strong>Prediction:</strong> {{ prediction }}</p>
+        {% endif %}
+    </div>
+</body>
+
+</html>
